@@ -1,0 +1,271 @@
+{
+  "updated_at": "2026-08-04T14:01:06.814847+00:00",
+  "records": [
+    {
+      "year": 2018,
+      "round": 1,
+      "event": "Australian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 2,
+      "event": "Bahrain Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 3,
+      "event": "Chinese Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 4,
+      "event": "Azerbaijan Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 5,
+      "event": "Spanish Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 6,
+      "event": "Monaco Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 7,
+      "event": "Canadian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 8,
+      "event": "French Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 9,
+      "event": "Austrian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 10,
+      "event": "British Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 11,
+      "event": "German Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 12,
+      "event": "Hungarian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 13,
+      "event": "Belgian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 14,
+      "event": "Italian Grand Prix",
+      "status": "failed",
+      "error": "DataNotLoadedError: The data you are trying to access has not been loaded yet. See `Session.load`"
+    },
+    {
+      "year": 2018,
+      "round": 15,
+      "event": "Singapore Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 16,
+      "event": "Russian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 17,
+      "event": "Japanese Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 18,
+      "event": "United States Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 19,
+      "event": "Mexican Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 20,
+      "event": "Brazilian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2018,
+      "round": 21,
+      "event": "Abu Dhabi Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 1,
+      "event": "Australian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 2,
+      "event": "Bahrain Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 3,
+      "event": "Chinese Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 4,
+      "event": "Azerbaijan Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 5,
+      "event": "Spanish Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 6,
+      "event": "Monaco Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 7,
+      "event": "Canadian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 8,
+      "event": "French Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2019,
+      "round": 9,
+      "event": "Austrian Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 10,
+      "event": "British Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 11,
+      "event": "German Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 12,
+      "event": "Hungarian Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 13,
+      "event": "Belgian Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 14,
+      "event": "Italian Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 15,
+      "event": "Singapore Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 16,
+      "event": "Russian Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 17,
+      "event": "Japanese Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 18,
+      "event": "Mexican Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 19,
+      "event": "United States Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 20,
+      "event": "Brazilian Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    },
+    {
+      "year": 2019,
+      "round": 21,
+      "event": "Abu Dhabi Grand Prix",
+      "status": "failed",
+      "error": "RateLimitExceededError: any API: 500 calls/h"
+    }
+  ]
+}

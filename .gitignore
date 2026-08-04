@@ -1,0 +1,4 @@
+data/fastf1/
+data/raw/fastf1_cache/
+__pycache__/
+*.py[cod]
