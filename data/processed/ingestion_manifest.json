@@ -1,6 +1,6 @@
 {
   "stage": "ingestion",
-  "updated_at": "2026-08-05T09:48:17.306214+00:00",
+  "updated_at": "2026-08-05T11:48:04.797170+00:00",
   "records": [
     {
       "year": 2018,
@@ -606,169 +606,505 @@
       "year": 2022,
       "round": 20,
       "event": "Mexico City Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2022,
       "round": 21,
       "event": "S\u00e3o Paulo Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2022,
       "round": 22,
       "event": "Abu Dhabi Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 1,
       "event": "Bahrain Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 2,
       "event": "Saudi Arabian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 3,
       "event": "Australian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 4,
       "event": "Azerbaijan Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 5,
       "event": "Miami Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 6,
       "event": "Monaco Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 7,
       "event": "Spanish Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 8,
       "event": "Canadian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 9,
       "event": "Austrian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 10,
       "event": "British Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 11,
       "event": "Hungarian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 12,
       "event": "Belgian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 13,
       "event": "Dutch Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 14,
       "event": "Italian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 15,
       "event": "Singapore Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 16,
       "event": "Japanese Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 17,
       "event": "Qatar Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 18,
       "event": "United States Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 19,
       "event": "Mexico City Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 20,
       "event": "S\u00e3o Paulo Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 21,
       "event": "Las Vegas Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2023,
       "round": 22,
       "event": "Abu Dhabi Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2024,
       "round": 1,
       "event": "Bahrain Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2024,
       "round": 2,
       "event": "Saudi Arabian Grand Prix",
-      "status": "processed"
+      "status": "cached"
     },
     {
       "year": 2024,
       "round": 3,
       "event": "Australian Grand Prix",
-      "status": "rate_limited"
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 4,
+      "event": "Japanese Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 5,
+      "event": "Chinese Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 6,
+      "event": "Miami Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 7,
+      "event": "Emilia Romagna Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 8,
+      "event": "Monaco Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 9,
+      "event": "Canadian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 10,
+      "event": "Spanish Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 11,
+      "event": "Austrian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 12,
+      "event": "British Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 13,
+      "event": "Hungarian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 14,
+      "event": "Belgian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 15,
+      "event": "Dutch Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 16,
+      "event": "Italian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 17,
+      "event": "Azerbaijan Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 18,
+      "event": "Singapore Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 19,
+      "event": "United States Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 20,
+      "event": "Mexico City Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 21,
+      "event": "S\u00e3o Paulo Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 22,
+      "event": "Las Vegas Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 23,
+      "event": "Qatar Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2024,
+      "round": 24,
+      "event": "Abu Dhabi Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 1,
+      "event": "Australian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 2,
+      "event": "Chinese Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 3,
+      "event": "Japanese Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 4,
+      "event": "Bahrain Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 5,
+      "event": "Saudi Arabian Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 6,
+      "event": "Miami Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 7,
+      "event": "Emilia Romagna Grand Prix",
+      "status": "cached"
+    },
+    {
+      "year": 2025,
+      "round": 8,
+      "event": "Monaco Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 9,
+      "event": "Spanish Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 10,
+      "event": "Canadian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 11,
+      "event": "Austrian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 12,
+      "event": "British Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 13,
+      "event": "Belgian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 14,
+      "event": "Hungarian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 15,
+      "event": "Dutch Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 16,
+      "event": "Italian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 17,
+      "event": "Azerbaijan Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 18,
+      "event": "Singapore Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 19,
+      "event": "United States Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 20,
+      "event": "Mexico City Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 21,
+      "event": "S\u00e3o Paulo Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 22,
+      "event": "Las Vegas Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 23,
+      "event": "Qatar Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2025,
+      "round": 24,
+      "event": "Abu Dhabi Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 1,
+      "event": "Australian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 2,
+      "event": "Chinese Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 3,
+      "event": "Japanese Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 4,
+      "event": "Miami Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 5,
+      "event": "Canadian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 6,
+      "event": "Monaco Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 7,
+      "event": "Barcelona Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 8,
+      "event": "Austrian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 9,
+      "event": "British Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 10,
+      "event": "Belgian Grand Prix",
+      "status": "processed"
+    },
+    {
+      "year": 2026,
+      "round": 11,
+      "event": "Hungarian Grand Prix",
+      "status": "processed"
     }
   ]
 }
