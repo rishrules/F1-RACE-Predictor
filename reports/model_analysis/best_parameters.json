@@ -1,0 +1,9 @@
+{
+  "Configuration": "strong_regularization",
+  "learning_rate": 0.08,
+  "max_iter": 150,
+  "max_leaf_nodes": 31,
+  "max_depth": null,
+  "min_samples_leaf": 40,
+  "l2_regularization": 8.0
+}

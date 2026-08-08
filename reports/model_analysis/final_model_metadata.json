@@ -1,0 +1,20 @@
+{
+  "TrainingWindows": 35346,
+  "Features": 148,
+  "Races": 182,
+  "TrainingThrough": {
+    "Year": 2026,
+    "RoundNumber": 11,
+    "EventName": "Hungarian Grand Prix"
+  },
+  "TrainingSeconds": 16.22901830007322,
+  "Parameters": {
+    "learning_rate": 0.08,
+    "max_iter": 150,
+    "max_leaf_nodes": 31,
+    "max_depth": null,
+    "min_samples_leaf": 40,
+    "l2_regularization": 8.0
+  },
+  "ValidationEvidence": "walk_forward_metrics.csv"
+}

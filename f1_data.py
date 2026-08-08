@@ -22,12 +22,24 @@ from fastf1.exceptions import DataNotLoadedError, RateLimitExceededError
 START_YEAR = 2018
 END_YEAR = 2026
 WINDOW_LAPS = 5
-PREDICTION_HORIZON_LAPS = 5
+PREDICTION_HORIZONS = (1, 3, 5, 10)
+PRIMARY_PREDICTION_HORIZON = 5
 
 ROOT = Path(__file__).resolve().parent
 CACHE_DIR = ROOT / "data" / "raw" / "fastf1_cache"
 PROCESSED_DIR = ROOT / "data" / "processed"
 FEATURE_DIR = ROOT / "data" / "features" / "position_5_laps"
+REQUIRED_FEATURE_COLUMNS = {
+    "TargetPositionChange_h1",
+    "TargetPositionChange_h3",
+    "TargetPositionChange_h5",
+    "TargetPositionChange_h10",
+    "Sector1ToFieldSeconds_lag0",
+    "VirtualSafetyCarThisLap",
+    "PitWindowPhase",
+    "LapsSincePitStop",
+    "EstimatedTyreLifeAdvantageLaps",
+}
 BASE_TABLES = ("laps", "results", "weather", "qualifying")
 EVENT_CONTEXT: dict[tuple[int, int], dict[str, str]] = {}
 TABLE_CACHE: dict[str, pd.DataFrame] = {}
@@ -60,6 +72,21 @@ def table_path(table: str, year: int, round_number: int) -> Path:
 
 def feature_path(year: int, round_number: int) -> Path:
     return partition_path(FEATURE_DIR, year, round_number)
+
+
+def feature_partition_is_current(path: Path) -> bool:
+    """Return whether a stored feature partition uses the current schema."""
+    if not path.exists():
+        return False
+    try:
+        stored = pd.read_parquet(path)
+    except Exception:
+        return False
+    # Known source races can legitimately produce no five-lap windows.
+    if stored.empty:
+        return True
+    columns = set(stored.columns)
+    return REQUIRED_FEATURE_COLUMNS.issubset(columns)
 
 
 def add_identifiers(
@@ -427,7 +454,7 @@ def build_five_lap_features(
     history: pd.DataFrame,
     event: pd.Series,
 ) -> pd.DataFrame:
-    """Create one row per driver/window with targets five laps in the future."""
+    """Create one row per driver/window with several future race horizons."""
     if laps.empty:
         return pd.DataFrame()
 
@@ -476,12 +503,44 @@ def build_five_lap_features(
         data.get("PitInTime", pd.Series(index=data.index, dtype="object")).notna()
         | data.get("PitOutTime", pd.Series(index=data.index, dtype="object")).notna()
     ).astype(int)
-    data["SafetyCarThisLap"] = (
-        data.get("TrackStatus", pd.Series("", index=data.index))
-        .astype(str)
-        .str.contains(r"[467]", regex=True)
-        .astype(int)
+    track_status = data.get(
+        "TrackStatus", pd.Series("", index=data.index)
+    ).astype(str)
+    # FastF1 status 4 is safety car; 6/7 are VSC deployed/ending. Keeping
+    # these separate prevents the model from treating both interventions alike.
+    data["SafetyCarThisLap"] = track_status.str.contains("4", regex=False).astype(int)
+    data["VirtualSafetyCarThisLap"] = track_status.str.contains(
+        r"[67]", regex=True
+    ).astype(int)
+
+    # Only current and past pit information is used. Before a driver's first
+    # stop, LapsSincePitStop remains missing and HasPitted distinguishes it.
+    last_pit_lap = data["LapNumber"].where(data["PitThisLap"].eq(1)).groupby(
+        data["DriverNumber"]
+    ).ffill()
+    data["HasPitted"] = last_pit_lap.notna().astype(int)
+    data["LapsSincePitStop"] = data["LapNumber"] - last_pit_lap
+
+    # Pit-window phase is based on the fraction of the starting field that has
+    # made a first stop by the current lap. This is causal and circuit agnostic.
+    first_pit_lap = (
+        data.loc[data["PitThisLap"].eq(1)]
+        .groupby("DriverNumber")["LapNumber"]
+        .min()
     )
+    field_size = max(int(data["DriverNumber"].nunique()), 1)
+    unique_laps = np.sort(data["LapNumber"].dropna().unique())
+    pitted_share_by_lap = {
+        lap: float(first_pit_lap.le(lap).sum() / field_size)
+        for lap in unique_laps
+    }
+    data["FieldPittedShare"] = data["LapNumber"].map(pitted_share_by_lap)
+    data["PitWindowPhase"] = pd.cut(
+        data["FieldPittedShare"],
+        bins=[-np.inf, 0.15, 0.35, 0.75, np.inf],
+        labels=["PreWindow", "Opening", "Active", "Closing"],
+        include_lowest=True,
+    ).astype("string")
 
     data["FieldMedianLapSeconds"] = data.groupby("LapNumber")[
         "LapTimeSeconds"
@@ -499,6 +558,20 @@ def build_five_lap_features(
     else:
         data["PaceToTeammateSeconds"] = np.nan
 
+    # Absolute sector seconds are difficult to compare between circuits. These
+    # deltas express each sector relative to the field and teammate on that lap.
+    for sector in ("Sector1", "Sector2", "Sector3"):
+        seconds = f"{sector}Seconds"
+        field_median = data.groupby("LapNumber")[seconds].transform("median")
+        data[f"{sector}ToFieldSeconds"] = data[seconds] - field_median
+        if "Team" in data:
+            team_median = data.groupby(["LapNumber", "Team"])[seconds].transform(
+                "median"
+            )
+            data[f"{sector}ToTeammateSeconds"] = data[seconds] - team_median
+        else:
+            data[f"{sector}ToTeammateSeconds"] = np.nan
+
     if "SessionTimeSeconds" not in data:
         data["SessionTimeSeconds"] = timedelta_seconds(data["Time"])
     data["GapToLeaderSeconds"] = data["SessionTimeSeconds"] - data.groupby(
@@ -512,13 +585,20 @@ def build_five_lap_features(
     ordered["GapToCarBehindSeconds"] = (
         lap_groups.shift(-1) - ordered["SessionTimeSeconds"]
     ).clip(lower=0)
+    tyre_life = pd.to_numeric(ordered.get("TyreLife"), errors="coerce")
+    car_ahead_tyre_life = tyre_life.groupby(ordered["LapNumber"], sort=False).shift(1)
+    # Positive means the current driver has the fresher tyre by this many laps.
+    ordered["EstimatedTyreLifeAdvantageLaps"] = car_ahead_tyre_life - tyre_life
     data = ordered.sort_values(["DriverNumber", "LapNumber"]).reset_index(drop=True)
 
     lag_columns = [
         "LapTimeSeconds",
-        "Sector1Seconds",
-        "Sector2Seconds",
-        "Sector3Seconds",
+        "Sector1ToFieldSeconds",
+        "Sector2ToFieldSeconds",
+        "Sector3ToFieldSeconds",
+        "Sector1ToTeammateSeconds",
+        "Sector2ToTeammateSeconds",
+        "Sector3ToTeammateSeconds",
         "Position",
         "TyreLife",
         "DRSActivePct",
@@ -527,6 +607,10 @@ def build_five_lap_features(
         "GapToCarBehindSeconds",
         "PaceToFieldSeconds",
         "PaceToTeammateSeconds",
+        "LapsSincePitStop",
+        "EstimatedTyreLifeAdvantageLaps",
+        "FieldPittedShare",
+        "VirtualSafetyCarThisLap",
         "AirTemp",
         "TrackTemp",
         "Rainfall",
@@ -545,15 +629,21 @@ def build_five_lap_features(
 
     rolling_columns = [
         "LapTimeSeconds",
-        "Sector1Seconds",
-        "Sector2Seconds",
-        "Sector3Seconds",
+        "Sector1ToFieldSeconds",
+        "Sector2ToFieldSeconds",
+        "Sector3ToFieldSeconds",
+        "Sector1ToTeammateSeconds",
+        "Sector2ToTeammateSeconds",
+        "Sector3ToTeammateSeconds",
         "Position",
         "TyreLife",
         "GapToLeaderSeconds",
         "GapToCarAheadSeconds",
         "PaceToFieldSeconds",
         "PaceToTeammateSeconds",
+        "LapsSincePitStop",
+        "EstimatedTyreLifeAdvantageLaps",
+        "FieldPittedShare",
         "TrackTemp",
     ]
     for column in rolling_columns:
@@ -573,7 +663,20 @@ def build_five_lap_features(
     compound_history = pd.concat(
         [grouped["Compound"].shift(lag) for lag in range(WINDOW_LAPS)], axis=1
     )
-    target_position = grouped["Position"].shift(-PREDICTION_HORIZON_LAPS)
+    target_values: dict[str, pd.Series] = {}
+    for horizon in PREDICTION_HORIZONS:
+        target_lap = grouped["LapNumber"].shift(-horizon)
+        contiguous = target_lap.sub(data["LapNumber"]).eq(horizon)
+        target_position = grouped["Position"].shift(-horizon).where(contiguous)
+        target_values[f"TargetLapNumber_h{horizon}"] = target_lap.where(contiguous)
+        target_values[f"TargetPosition_h{horizon}"] = target_position
+        target_values[f"TargetPositionChange_h{horizon}"] = (
+            target_position - data["Position"]
+        )
+        target_values[f"TargetGapToLeaderSeconds_h{horizon}"] = grouped[
+            "GapToLeaderSeconds"
+        ].shift(-horizon).where(contiguous)
+
     additions = pd.DataFrame(
         {
             "PitLapsLast5": grouped["PitThisLap"].transform(
@@ -586,21 +689,34 @@ def build_five_lap_features(
                     WINDOW_LAPS, min_periods=WINDOW_LAPS
                 ).sum()
             ),
+            "VirtualSafetyCarLapsLast5": grouped[
+                "VirtualSafetyCarThisLap"
+            ].transform(
+                lambda values: values.rolling(
+                    WINDOW_LAPS, min_periods=WINDOW_LAPS
+                ).sum()
+            ),
             "CompoundChangedLast5": compound_history.nunique(
                 axis=1, dropna=True
             ).gt(1),
-            "TargetLapNumber": grouped["LapNumber"].shift(
-                -PREDICTION_HORIZON_LAPS
-            ),
-            "TargetPosition": target_position,
-            "TargetPositionChange": target_position - data["Position"],
-            "TargetGapToLeaderSeconds": grouped["GapToLeaderSeconds"].shift(
-                -PREDICTION_HORIZON_LAPS
-            ),
             "_driver_lap_index": grouped.cumcount(),
+            **target_values,
         },
         index=data.index,
     )
+    # Preserve the original five-lap names for existing consumers.
+    additions["TargetLapNumber"] = additions[
+        f"TargetLapNumber_h{PRIMARY_PREDICTION_HORIZON}"
+    ]
+    additions["TargetPosition"] = additions[
+        f"TargetPosition_h{PRIMARY_PREDICTION_HORIZON}"
+    ]
+    additions["TargetPositionChange"] = additions[
+        f"TargetPositionChange_h{PRIMARY_PREDICTION_HORIZON}"
+    ]
+    additions["TargetGapToLeaderSeconds"] = additions[
+        f"TargetGapToLeaderSeconds_h{PRIMARY_PREDICTION_HORIZON}"
+    ]
     data = pd.concat([data, additions], axis=1)
 
     context_columns = [
@@ -641,8 +757,15 @@ def build_five_lap_features(
         "TrackStatus",
         "PitThisLap",
         "SafetyCarThisLap",
+        "VirtualSafetyCarThisLap",
+        "HasPitted",
+        "LapsSincePitStop",
+        "FieldPittedShare",
+        "PitWindowPhase",
+        "EstimatedTyreLifeAdvantageLaps",
         "PitLapsLast5",
         "SafetyCarLapsLast5",
+        "VirtualSafetyCarLapsLast5",
         "CompoundChangedLast5",
     ]
     engineered_columns = [
@@ -655,9 +778,21 @@ def build_five_lap_features(
         "TargetPosition",
         "TargetPositionChange",
         "TargetGapToLeaderSeconds",
+        *[
+            f"Target{target}_h{horizon}"
+            for horizon in PREDICTION_HORIZONS
+            for target in (
+                "LapNumber",
+                "Position",
+                "PositionChange",
+                "GapToLeaderSeconds",
+            )
+        ],
     ]
+    # Keep any row with a valid one-lap target. Longer-horizon preparation will
+    # filter its own unavailable tail rows without discarding shorter targets.
     valid = data["_driver_lap_index"].ge(WINDOW_LAPS - 1) & data[
-        "TargetPosition"
+        "TargetPosition_h1"
     ].notna()
     columns = [
         column
@@ -673,7 +808,9 @@ def build_event_features(year: int, event: pd.Series) -> dict[str, object]:
     event_name = str(event["EventName"])
     telemetry_destination = table_path("telemetry_laps", year, round_number)
     features_destination = feature_path(year, round_number)
-    if telemetry_destination.exists() and features_destination.exists():
+    if telemetry_destination.exists() and feature_partition_is_current(
+        features_destination
+    ):
         logging.info("Features already exist for %s R%d", year, round_number)
         return {"year": year, "round": round_number, "event": event_name, "status": "cached"}
 
@@ -681,29 +818,34 @@ def build_event_features(year: int, event: pd.Series) -> dict[str, object]:
     if not all(path.exists() for path in base_paths.values()):
         return {"year": year, "round": round_number, "event": event_name, "status": "base_missing"}
 
-    logging.info("Building telemetry features for %s R%d: %s", year, round_number, event_name)
-    race = event.get_session("R")
-    race.load(laps=True, telemetry=True, weather=True, messages=False)
-    telemetry = aggregate_lap_telemetry(race)
-    write_partition(
-        telemetry_destination,
-        telemetry,
-        year=year,
-        round_number=round_number,
-        event_name=event_name,
-        session_name="Race",
-    )
+    logging.info("Building features for %s R%d: %s", year, round_number, event_name)
+    if telemetry_destination.exists():
+        telemetry = pd.read_parquet(telemetry_destination)
+    else:
+        # Only races without an existing telemetry-lap partition require a
+        # FastF1 session load. Normal schema upgrades rebuild entirely offline.
+        race = event.get_session("R")
+        race.load(laps=True, telemetry=True, weather=True, messages=False)
+        telemetry = aggregate_lap_telemetry(race)
+        write_partition(
+            telemetry_destination,
+            telemetry,
+            year=year,
+            round_number=round_number,
+            event_name=event_name,
+            session_name="Race",
+        )
 
     features = build_five_lap_features(
-        loaded_table(race, "laps"),
+        pd.read_parquet(base_paths["laps"]),
         telemetry,
-        loaded_table(race, "weather_data"),
+        pd.read_parquet(base_paths["weather"]),
         pd.read_parquet(base_paths["results"]),
         pd.read_parquet(base_paths["qualifying"]),
         historical_features(
             year,
             round_number,
-            loaded_table(race, "laps"),
+            pd.read_parquet(base_paths["laps"]),
         ),
         event,
     )
