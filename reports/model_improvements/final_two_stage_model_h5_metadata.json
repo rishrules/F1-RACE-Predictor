@@ -1,0 +1,9 @@
+{
+  "training_windows":35346,
+  "features":198,
+  "races":182,
+  "trained_through":"2026 R11 Hungarian Grand Prix",
+  "training_seconds":54.0977405,
+  "target_horizon":5,
+  "recency_half_life_races":20
+}

@@ -460,11 +460,16 @@ unchanged about 80% of the time, explaining its much smaller absolute MAE.
     print(f"REPORT WRITTEN: {REPORT_PATH}", flush=True)
 
 
-def train_final_model() -> None:
-    """Fit the selected production model on every available 10-lap target."""
+def train_final_model(
+    target_horizon: int = 10,
+    output_path: Path = FINAL_MODEL_PATH,
+) -> None:
+    """Fit a current-position-only production model for one target horizon."""
+    if target_horizon not in (5, 10):
+        raise ValueError("Production live models support only 5 or 10 laps")
     prepared = load_and_prepare_training_data(
         lap_stride=LAP_STRIDE,
-        target_horizon=10,
+        target_horizon=target_horizon,
     )
     events = event_table(prepared)
     event_order = {
@@ -505,18 +510,20 @@ def train_final_model() -> None:
         "categorical_columns": list(prepared.categorical_columns),
         "category_vocabularies": category_vocabularies,
         "parameters": asdict(PARAMETERS),
-        "target_horizon": 10,
+        "target_horizon": target_horizon,
         "lap_stride": LAP_STRIDE,
         "recency_half_life_races": 20,
         "position_variant": "current_only",
         "excluded_columns": ["DriverNumber", "Country"],
     }
-    temporary = FINAL_MODEL_PATH.with_suffix(".joblib.tmp")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output_path.with_suffix(".joblib.tmp")
     joblib.dump(bundle, temporary)
-    temporary.replace(FINAL_MODEL_PATH)
+    temporary.replace(output_path)
 
     latest = events.iloc[-1]
-    FINAL_MODEL_METADATA_PATH.write_text(
+    metadata_path = output_path.with_name(f"{output_path.stem}_metadata.json")
+    metadata_path.write_text(
         pd.Series(
             {
                 "training_windows": len(X),
@@ -526,13 +533,13 @@ def train_final_model() -> None:
                     f"{int(latest.Year)} R{int(latest.RoundNumber)} {latest.EventName}"
                 ),
                 "training_seconds": training_seconds,
-                "target_horizon": 10,
+                "target_horizon": target_horizon,
                 "recency_half_life_races": 20,
             }
         ).to_json(indent=2),
         encoding="utf-8",
     )
-    print(f"FINAL MODEL WRITTEN: {FINAL_MODEL_PATH}", flush=True)
+    print(f"FINAL MODEL WRITTEN: {output_path}", flush=True)
 
 
 def main() -> None:

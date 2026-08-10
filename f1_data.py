@@ -453,8 +453,17 @@ def build_five_lap_features(
     qualifying: pd.DataFrame,
     history: pd.DataFrame,
     event: pd.Series,
+    *,
+    total_race_laps: int | None = None,
+    require_future_targets: bool = True,
 ) -> pd.DataFrame:
-    """Create one row per driver/window with several future race horizons."""
+    """Create one row per driver/window with several future race horizons.
+
+    Offline ingestion keeps ``require_future_targets=True`` so training rows
+    always have a known label. A live caller sets it to false to retain the
+    newest completed five-lap window. Live callers must also pass the scheduled
+    race distance because the largest observed lap is not the total distance.
+    """
     if laps.empty:
         return pd.DataFrame()
 
@@ -496,7 +505,13 @@ def build_five_lap_features(
     data["Country"] = str(event.get("Country", "Unknown"))
     data["EventFormat"] = str(event.get("EventFormat", "conventional"))
 
-    total_laps = pd.to_numeric(data["LapNumber"], errors="coerce").max()
+    total_laps = (
+        int(total_race_laps)
+        if total_race_laps is not None
+        else pd.to_numeric(data["LapNumber"], errors="coerce").max()
+    )
+    if pd.isna(total_laps) or float(total_laps) <= 0:
+        raise ValueError("total_race_laps must be a positive number")
     data["TotalRaceLaps"] = total_laps
     data["RaceProgress"] = data["LapNumber"] / total_laps
     data["PitThisLap"] = (
@@ -789,11 +804,11 @@ def build_five_lap_features(
             )
         ],
     ]
-    # Keep any row with a valid one-lap target. Longer-horizon preparation will
-    # filter its own unavailable tail rows without discarding shorter targets.
-    valid = data["_driver_lap_index"].ge(WINDOW_LAPS - 1) & data[
-        "TargetPosition_h1"
-    ].notna()
+    # Training keeps only labelled rows. Live inference retains the newest
+    # completed window even though no future target exists yet.
+    valid = data["_driver_lap_index"].ge(WINDOW_LAPS - 1)
+    if require_future_targets:
+        valid &= data["TargetPosition_h1"].notna()
     columns = [
         column
         for column in [*context_columns, *engineered_columns, *target_columns]
